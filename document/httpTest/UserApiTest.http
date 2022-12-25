@@ -1,0 +1,19 @@
+### 登录请求
+POST {{admin}}/login
+Content-Type: application/json
+
+{
+  "email": "123456@qq.com",
+  "password": "Wangbiao970805"
+}
+
+### 用户注册
+POST {{api}}/register
+Content-Type: application/json
+
+{
+  "email": "123456@qq.com",
+  "password": "Wangbiao970805",
+  "username": "wangbiao",
+  "avatar": "http://www.baidu.com/img/bd_logo1.png"
+}
