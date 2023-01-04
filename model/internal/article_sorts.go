@@ -1,9 +1,8 @@
-package model
+package internal
 
-// ArticleCategoryDao is the manager for logic model data accessing and custom defined data operations functions management.
-type ArticleCategoryDao struct {
-	Table   string                 // Table is the underlying table name of the DAO.
-	Group   string                 // Group is the database configuration group name of current DAO.
+// ArticleCategoryTable is the manager for logic model data accessing and custom defined data operations functions management.
+type ArticleCategoryTable struct {
+	Table   string                 // Table is the underlying table name of the Table.
 	Columns ArticleCategoryColumns // Columns is the short type for Columns, which contains all the column names of Table for convenient usage.
 }
 
@@ -29,10 +28,9 @@ var articleCategoryColumns = ArticleCategoryColumns{
 	Status:     "status",
 }
 
-// NewArticleCategoryDao creates and returns a new DAO object for table data access.
-func NewArticleCategoryDao() *ArticleCategoryDao {
-	return &ArticleCategoryDao{
-		Group:   "default",
+// NewArticleCategoryTable creates and returns a new Table object for table data access.
+func NewArticleCategoryTable() *ArticleCategoryTable {
+	return &ArticleCategoryTable{
 		Table:   "article_sorts",
 		Columns: articleCategoryColumns,
 	}

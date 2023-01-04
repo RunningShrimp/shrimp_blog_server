@@ -1,0 +1,4 @@
+app:
+  server:
+    port: 8080
+    name: "虾米小站后台服务系统"

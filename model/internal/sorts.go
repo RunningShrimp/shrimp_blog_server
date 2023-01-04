@@ -1,9 +1,9 @@
-package model
+package internal
 
-// CategoryDao is the manager for logic model data accessing and custom defined data operations functions management.
-type CategoryDao struct {
-	Table   string          // Table is the underlying table name of the DAO.
-	Group   string          // Group is the database configuration group name of current DAO.
+// CategoryTable is the manager for logic model data accessing and custom defined data operations functions management.
+type CategoryTable struct {
+	Table string // Table is the underlying table name of the Table.
+
 	Columns CategoryColumns // Columns is the short type for Columns, which contains all the column names of Table for convenient usage.
 }
 
@@ -27,10 +27,10 @@ var sortsColumns = CategoryColumns{
 	Status:     "status",
 }
 
-// NewCategoryDao creates and returns a new DAO object for table data access.
-func NewCategoryDao() *CategoryDao {
-	return &CategoryDao{
-		Group:   "default",
+// NewCategoryTable creates and returns a new Table object for table data access.
+func NewCategoryTable() *CategoryTable {
+	return &CategoryTable{
+
 		Table:   "sorts",
 		Columns: sortsColumns,
 	}
