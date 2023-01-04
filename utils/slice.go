@@ -1,12 +1,10 @@
 package utils
 
-import "strconv"
-
-func JoinIntSlice(s []int, sep string) string {
+func JoinIntSlice(s []any, sep string) string {
 	var result = ""
 
 	for i := range s {
-		result += strconv.Itoa(s[i])
+		result += ToString(ToString(i))
 		if len(s)-1 != i {
 			result += sep
 		}

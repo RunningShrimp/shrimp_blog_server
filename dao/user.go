@@ -14,7 +14,7 @@ type UserDao BaseDao[model.User]
 type UserDaoImpl struct{}
 
 func (u *UserDaoImpl) SelectById(id int) *model.User {
-	sql := fmt.Sprintf("select %s from user where id = %d ", GenFiledString[model.User](), id)
+	sql := fmt.Sprintf("select %s from user where id = %d ", genSelectFiledString[model.User](), id)
 
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 	slice := rowsToSlice[model.User](sql)
@@ -25,14 +25,14 @@ func (u *UserDaoImpl) SelectById(id int) *model.User {
 }
 
 func (u *UserDaoImpl) SelectByPage(page, pageSize int) []*model.User {
-	sql := fmt.Sprintf("select %s from user limit %d , %d", GenFiledString[model.User](), (page-1)*pageSize, pageSize)
+	sql := fmt.Sprintf("select %s from user limit %d , %d", genSelectFiledString[model.User](), (page-1)*pageSize, pageSize)
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 	return rowsToSlice[model.User](sql)
 
 }
 
 func (u *UserDaoImpl) SelectByIds(ids ...int) []*model.User {
-	sql := fmt.Sprintf("select %s from user where id in ( %s )", GenFiledString[model.User](), utils.JoinIntSlice(ids, ","))
+	sql := fmt.Sprintf("select %s from user where id in ( %s )", genSelectFiledString[model.User](), utils.JoinIntSlice(ids, ","))
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 	return rowsToSlice[model.User](sql)
 }
@@ -49,7 +49,8 @@ func (u *UserDaoImpl) SelectStatusById(id int) int {
 }
 
 func (u *UserDaoImpl) Insert(t *model.User) {
-	constant.DBOp.Exec()
+	//constant.DBOp.Exec()
+	sql := fmt.Sprintf("insert into user %s  ")
 }
 
 func (u *UserDaoImpl) Update(t *model.User) {

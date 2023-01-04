@@ -35,7 +35,8 @@ type BaseDao[T Model] interface {
 
 const SqlSelectById = "select "
 
-func GenFiledString[T Model]() string {
+// 生成select 查询字段
+func genSelectFiledString[T Model]() string {
 	var m T
 	var result = make([]string, 0)
 
@@ -47,6 +48,33 @@ func GenFiledString[T Model]() string {
 	}
 
 	return strings.Join(result, ",")
+}
+
+func genInsertFiledString[T Model]() string {
+	var m T
+	var result = make([]string, 0)
+
+	st := reflect.TypeOf(m)
+	fieldNum := st.NumField()
+	for i := 0; i < fieldNum; i++ {
+		dbTag := st.Field(i).Tag.Get("db")
+		if strings.Contains(dbTag, "id") || strings.Contains(strings.ToLower(dbTag), "time") {
+			continue
+		}
+		result = append(result, dbTag)
+	}
+
+	return strings.Join(result, ",")
+}
+
+func genInsertValueString[T Model](m T) string {
+	var result = make([]any, 0)
+
+	st := reflect.TypeOf(m)
+	fieldNum := st.NumField()
+	for i := 0; i < fieldNum; i++ {
+		v := reflect.ValueOf(m)
+	}
 }
 
 func rowsToSlice[T Model](sql string) []*T {
