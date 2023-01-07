@@ -1,69 +1,76 @@
-// Package config 这是解析配置文件的，是整个应用的首先开始的地方，这里只要的出错就是严重的问题，所以需要整个应用退出
 package config
 
 import (
-	"context"
+	_ "github.com/go-sql-driver/mysql"
+
 	"fmt"
 	redisClient "github.com/go-redis/redis"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"os"
 	"path/filepath"
-	constant "shrimp_blog_sever_v2/app"
-	"shrimp_blog_sever_v2/config/internal"
-	"strconv"
+	constant "shrimp_blog_sever/app"
 	"strings"
 )
 
-func InitGoble(path string) {
-	parse(path)
-	newDatabase()
-	newRedis()
+/*
+这是解析配置文件的，是整个应用的首先开始的地方，这里只要的出错就是严重的问题，所以需要整个应用退出
+*/
+
+var (
+	RsConfig = &AppConfig{
+		EnvCfgFilePath: "",
+		Env:            "",
+		WrapperConfig:  WrapperConfig{},
+	}
+)
+
+func Init(path string) {
+	initConfig(path)
+	initDatabase()
+	initRedis()
 }
 
-var app = &internal.App{}
+func getEnvCfgFilePath(EntranceFile string) string {
+	resourceDir, resourceFile := getEntranceDirectory(EntranceFile)
 
-func path(path string) string {
-	resourcePath := resourcePath(path)
+	envType := getEnvType(resourceFile)
 
-	env := activeEnv(path)
-
-	file := filepath.Join(resourcePath, "app.yaml")
-
-	filepath.WalkDir(
-		resourcePath,
+	err := filepath.WalkDir(
+		resourceDir,
 		func(path string, d fs.DirEntry, err error) error {
 			fileInfo, err := d.Info()
 			if err != nil {
 				return err
 			}
-			if strings.Contains(fileInfo.Name(), env) {
-				file = path
+
+			// todo: 多个文件怎么办？
+			if strings.Contains(fileInfo.Name(), envType) {
+				RsConfig.EnvCfgFilePath = path
 			}
+
 			return err
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
 
-	// 放入context中，方便以后取值
-	constant.Context = context.WithValue(constant.Context, constant.ConfigPath, file)
-	return file
+	return RsConfig.EnvCfgFilePath
 }
-
-func activeEnv(path string) string {
-	appFilePath := filepath.Join(resourcePath(path), "app.yaml")
-
-	type profile struct {
-		Active string `yaml:"active"`
-	}
-	type appInfo struct {
-		Profile profile `yaml:"profile"`
-	}
+func getEnvType(appFile string) string {
+	type (
+		appInfo struct {
+			Profile struct {
+				Active string `yaml:"active"`
+			} `yaml:"profile"`
+		}
+	)
 
 	pro := appInfo{}
 
-	content, err := os.ReadFile(appFilePath)
+	content, err := os.ReadFile(appFile)
 	if err != nil {
 		panic(err)
 	}
@@ -72,48 +79,43 @@ func activeEnv(path string) string {
 		panic(err)
 	}
 
-	constant.Context = context.WithValue(
-		constant.Context,
-		constant.EnvConfig,
-		pro.Profile.Active,
-	)
+	RsConfig.Env = pro.Profile.Active
 
 	return pro.Profile.Active
 }
 
-func resourcePath(path string) string {
-	currentProgramPath, err := filepath.Abs(path)
-
+func getEntranceDirectory(configPathPrefix string) (string, string) {
+	appEntranceDirectory, err := filepath.Abs(configPathPrefix)
 	if err != nil {
 		panic(err)
 	}
 
-	return filepath.Join(currentProgramPath, "resource")
+	return appEntranceDirectory, filepath.Join(appEntranceDirectory, "resource", "app.yaml")
 }
 
-func parse(configFile string) {
-	content, err := os.ReadFile(path(configFile))
+func initConfig(configFile string) {
+	configContent, err := os.ReadFile(getEnvCfgFilePath(configFile))
 	if err != nil {
 		panic(err)
 	}
 
-	err = yaml.Unmarshal(content, &app)
+	err = yaml.Unmarshal(configContent, &RsConfig.WrapperConfig)
 	if err != nil {
 		panic(err)
 	}
 }
-func newDatabase() {
-	database := app.Config.Database
+func initDatabase() {
+	database := RsConfig.Config.Database
 	connectInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", database.Username, database.Password, database.URL, database.Dbname)
 	db, err := sqlx.Open(database.Type, connectInfo)
 	if err != nil {
 		panic(err)
 	}
-	constant.DBOp = db
+	constant.DBClient = db
 }
 
-func newRedis() {
-	redisConfig := app.Config.Redis
+func initRedis() {
+	redisConfig := RsConfig.Config.Redis
 
 	constant.RedisClient = redisClient.NewClient(&redisClient.Options{
 		Addr:     fmt.Sprintf("%s:%d", redisConfig.Host, redisConfig.Port),
@@ -123,5 +125,6 @@ func newRedis() {
 }
 
 func ServerPort() string {
-	return ":" + strconv.Itoa(app.Config.Server.Port)
+	//todo:check port valid
+	return fmt.Sprintf(":%d", RsConfig.Config.Server.Port)
 }

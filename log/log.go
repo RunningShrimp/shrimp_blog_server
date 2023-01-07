@@ -2,24 +2,24 @@ package log
 
 import (
 	"go.uber.org/zap"
-	"shrimp_blog_sever_v2/app"
-	"strings"
+	"shrimp_blog_sever/config"
 )
 
 var Logger *zap.Logger
 
 func init() {
-	env := "dev"
-	if v := app.Context.Value(app.EnvConfig); v != nil {
-		env = v.(string)
-	}
 
 	var err error
-	if strings.Contains(env, "prd") {
+
+	switch config.RsConfig.Env {
+	case "dev":
+		Logger, err = zap.NewDevelopment()
+	case "prd":
 		Logger, err = zap.NewProduction()
-	} else {
+	default:
 		Logger, err = zap.NewDevelopment()
 	}
+
 	if err != nil {
 		panic(err)
 	}

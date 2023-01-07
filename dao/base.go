@@ -3,9 +3,9 @@ package dao
 import (
 	"go.uber.org/zap"
 	"reflect"
-	"shrimp_blog_sever_v2/app"
-	"shrimp_blog_sever_v2/log"
-	"shrimp_blog_sever_v2/model"
+	"shrimp_blog_sever/app"
+	"shrimp_blog_sever/log"
+	"shrimp_blog_sever/model"
 	"strings"
 	"time"
 )
@@ -133,14 +133,14 @@ func genUpdateFieldString[T Model](m T) string {
 func rowsToSlice[T Model](sql string) []*T {
 	var models []*T
 
-	stmt, err := app.DBOp.Prepare(sql)
+	stmt, err := app.DBClient.Prepare(sql)
 	if err != nil {
 		log.Logger.Error("sql语句错误：", zap.Error(err))
 		return nil
 	}
 	stmt.QueryRow()
 
-	rows, err := app.DBOp.Queryx(sql)
+	rows, err := app.DBClient.Queryx(sql)
 	if err != nil {
 		log.Logger.Error("查询错误，", zap.Error(err))
 		return nil

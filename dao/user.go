@@ -3,10 +3,10 @@ package dao
 import (
 	"fmt"
 	"go.uber.org/zap"
-	"shrimp_blog_sever_v2/app"
-	"shrimp_blog_sever_v2/log"
-	"shrimp_blog_sever_v2/model"
-	"shrimp_blog_sever_v2/utils"
+	"shrimp_blog_sever/app"
+	"shrimp_blog_sever/log"
+	"shrimp_blog_sever/model"
+	"shrimp_blog_sever/utils"
 	"time"
 )
 
@@ -41,7 +41,7 @@ func (u *UserDaoImpl) SelectStatusById(id int) int {
 	var status int
 	sql := fmt.Sprintf("select status from user where  id = %d", id)
 
-	if err := app.DBOp.Get(&status, sql); err != nil {
+	if err := app.DBClient.Get(&status, sql); err != nil {
 		log.Logger.Error("查询用户出错：", zap.Error(err))
 		return -1
 	}
@@ -54,7 +54,7 @@ func (u *UserDaoImpl) Insert(t *model.User) bool {
 	sql := fmt.Sprintf("insert into user  %s  VALUES %s ", genInsertFieldString[model.User](), p)
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 
-	result := app.DBOp.MustExec(sql, v...)
+	result := app.DBClient.MustExec(sql, v...)
 
 	n, err := result.RowsAffected()
 	if err != nil {
@@ -70,7 +70,7 @@ func (u *UserDaoImpl) Update(t *model.User) bool {
 	t.UpdateTime = &now
 	sql := fmt.Sprintf("update user set %s where id=:id", genUpdateFieldString[model.User](*t))
 
-	result, err := app.DBOp.NamedExec(sql, *t)
+	result, err := app.DBClient.NamedExec(sql, *t)
 	if err != nil {
 		log.Logger.Error("更新用户失败：", zap.Error(err))
 		return false
@@ -91,7 +91,7 @@ func (u *UserDaoImpl) DeleteById(t *model.User) bool {
 	t.UpdateTime = &now
 	t.Status = uint(app.Disable)
 
-	result, err := app.DBOp.NamedExec("update user set delete_time = :delete_time,status = :status where id = :id", *t)
+	result, err := app.DBClient.NamedExec("update user set delete_time = :delete_time,status = :status where id = :id", *t)
 	if err != nil {
 		log.Logger.Error("删除用户失败：", zap.Error(err))
 		return false

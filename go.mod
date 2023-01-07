@@ -1,4 +1,4 @@
-module shrimp_blog_sever_v2
+module shrimp_blog_sever
 
 go 1.19
 

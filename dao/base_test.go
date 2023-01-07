@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"shrimp_blog_sever_v2/model"
+	"shrimp_blog_sever/model"
 	"testing"
 )
 

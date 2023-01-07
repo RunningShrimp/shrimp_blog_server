@@ -2,7 +2,7 @@ package routes
 
 import (
 	"net/http"
-	"shrimp_blog_sever_v2/app"
+	"shrimp_blog_sever/app"
 )
 
 type router struct { //nolint:maligned

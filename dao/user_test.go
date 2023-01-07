@@ -2,14 +2,14 @@ package dao
 
 import (
 	"os"
-	"shrimp_blog_sever_v2/config"
-	"shrimp_blog_sever_v2/model"
+	"shrimp_blog_sever/config"
+	"shrimp_blog_sever/model"
 	"testing"
 )
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
-	config.InitGoble("../")
+	config.Init("../")
 
 	os.Exit(m.Run())
 }
