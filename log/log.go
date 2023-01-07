@@ -2,7 +2,7 @@ package log
 
 import (
 	"go.uber.org/zap"
-	"shrimp_blog_sever_v2/constant"
+	"shrimp_blog_sever_v2/app"
 	"strings"
 )
 
@@ -10,7 +10,7 @@ var Logger *zap.Logger
 
 func init() {
 	env := "dev"
-	if v := constant.Context.Value(constant.EnvConfig); v != nil {
+	if v := app.Context.Value(app.EnvConfig); v != nil {
 		env = v.(string)
 	}
 

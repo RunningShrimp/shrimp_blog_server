@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"shrimp_blog_sever_v2/app"
 	"shrimp_blog_sever_v2/config"
 	_ "shrimp_blog_sever_v2/config"
-	"shrimp_blog_sever_v2/constant"
 	"shrimp_blog_sever_v2/utils"
 )
 
@@ -40,7 +40,7 @@ func main() {
 func genEntity(dbName, tableName string) string {
 	content := fmt.Sprintf("package model \n\nimport (\n\t\"time\"\n)  \n\ntype %s struct {\n", utils.ToUpperCamel(tableName))
 
-	columns, err := constant.DBOp.Queryx("select COLUMN_NAME,COLUMN_TYPE from information_schema.columns where  TABLE_SCHEMA = ? and TABLE_NAME = ?", dbName, tableName)
+	columns, err := app.DBOp.Queryx("select COLUMN_NAME,COLUMN_TYPE from information_schema.columns where  TABLE_SCHEMA = ? and TABLE_NAME = ?", dbName, tableName)
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ func genEntity(dbName, tableName string) string {
 }
 
 func genModelFile(projectPath, dbName string) {
-	rows, err := constant.DBOp.Queryx("select table_name from information_schema.TABLES where TABLE_SCHEMA =?", dbName)
+	rows, err := app.DBOp.Queryx("select table_name from information_schema.TABLES where TABLE_SCHEMA =?", dbName)
 	if err != nil {
 		panic(err)
 	}
@@ -102,7 +102,7 @@ func genModelFile(projectPath, dbName string) {
 }
 
 func genColumns(dbName, tableName string) string {
-	columns, err := constant.DBOp.Queryx("select COLUMN_NAME from information_schema.columns where  TABLE_SCHEMA = ? and TABLE_NAME = ?", dbName, tableName)
+	columns, err := app.DBOp.Queryx("select COLUMN_NAME from information_schema.columns where  TABLE_SCHEMA = ? and TABLE_NAME = ?", dbName, tableName)
 	if err != nil {
 		panic(err)
 	}

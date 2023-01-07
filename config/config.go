@@ -12,7 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"shrimp_blog_sever_v2/config/internal"
-	"shrimp_blog_sever_v2/constant"
+	"strconv"
 	"strings"
 )
 
@@ -46,7 +46,7 @@ func path(path string) string {
 	)
 
 	// 放入context中，方便以后取值
-	constant.Context = context.WithValue(constant.Context, constant.ConfigPath, file)
+	app.Context = context.WithValue(app.Context, app.ConfigPath, file)
 	return file
 }
 
@@ -71,9 +71,9 @@ func activeEnv(path string) string {
 		panic(err)
 	}
 
-	constant.Context = context.WithValue(
-		constant.Context,
-		constant.EnvConfig,
+	app.Context = context.WithValue(
+		app.Context,
+		app.EnvConfig,
 		pro.Profile.Active,
 	)
 
@@ -108,15 +108,19 @@ func newDatabase() {
 	if err != nil {
 		panic(err)
 	}
-	constant.DBOp = db
+	app.DBOp = db
 }
 
 func newRedis() {
 	redisConfig := app.Config.Redis
 
-	constant.RedisClient = redisClient.NewClient(&redisClient.Options{
+	app.RedisClient = redisClient.NewClient(&redisClient.Options{
 		Addr:     fmt.Sprintf("%s:%d", redisConfig.Host, redisConfig.Port),
 		Password: redisConfig.Password,
 		DB:       redisConfig.Database,
 	})
+}
+
+func ServerPort() string {
+	return ":" + strconv.Itoa(app.Config.Server.Port)
 }

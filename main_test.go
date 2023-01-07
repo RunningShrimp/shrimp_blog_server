@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
+	"shrimp_blog_sever_v2/app"
 	"shrimp_blog_sever_v2/config"
 	_ "shrimp_blog_sever_v2/config"
-	"shrimp_blog_sever_v2/constant"
 	"shrimp_blog_sever_v2/model"
 	"testing"
 )
@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestDatabase(t *testing.T) {
-	rows, err := constant.DBOp.Queryx("select * from user")
+	rows, err := app.DBOp.Queryx("select * from user")
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,7 +32,7 @@ func TestDatabase(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	rows, err := constant.DBOp.Queryx("select * from user")
+	rows, err := app.DBOp.Queryx("select * from user")
 
 	if err != nil {
 		t.Error(err)

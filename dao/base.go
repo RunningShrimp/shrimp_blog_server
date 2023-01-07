@@ -3,7 +3,7 @@ package dao
 import (
 	"go.uber.org/zap"
 	"reflect"
-	"shrimp_blog_sever_v2/constant"
+	"shrimp_blog_sever_v2/app"
 	"shrimp_blog_sever_v2/log"
 	"shrimp_blog_sever_v2/model"
 	"strings"
@@ -28,9 +28,9 @@ type BaseDao[T Model] interface {
 	SelectByPage(page, pageSize int) []*T
 	SelectByIds(ids ...int) []*T
 	SelectStatusById(id int) int
-	Insert(t *T)
-	Update(t *T)
-	DeleteById(t *T)
+	Insert(t *T) bool
+	Update(t *T) bool
+	DeleteById(t *T) bool
 }
 
 const SqlSelectById = "select "
@@ -50,7 +50,39 @@ func genSelectFiledString[T Model]() string {
 	return strings.Join(result, ",")
 }
 
-func genInsertFiledString[T Model]() string {
+func genInsertValueAndPlaceholder[T Model](m T) ([]any, string) {
+	var result = make([]any, 0)
+	var placeholder = make([]string, 0)
+
+	st := reflect.TypeOf(m)
+	fieldNum := st.NumField()
+	for i := 0; i < fieldNum; i++ {
+		dbTag := st.Field(i).Tag.Get("db")
+		if strings.Contains(dbTag, "id") || strings.Contains(strings.ToLower(dbTag), "time") {
+			continue
+		}
+		field := reflect.ValueOf(m).Field(i)
+
+		var v any
+		switch {
+		case field.CanUint():
+			v = field.Uint()
+		case field.CanFloat():
+			v = field.Float()
+		case field.CanInt():
+			v = field.Int()
+		default:
+			v = field.String()
+		}
+
+		result = append(result, v)
+		placeholder = append(placeholder, "?")
+	}
+
+	return result, "( " + strings.Join(placeholder, ",") + " ) "
+}
+
+func genInsertFieldString[T Model]() string {
 	var m T
 	var result = make([]string, 0)
 
@@ -63,31 +95,52 @@ func genInsertFiledString[T Model]() string {
 		}
 		result = append(result, dbTag)
 	}
-
-	return strings.Join(result, ",")
+	return "( " + strings.Join(result, ",") + " ) "
 }
 
-func genInsertValueString[T Model](m T) string {
-	var result = make([]any, 0)
+func genUpdateFieldString[T Model](m T) string {
+	var result = make([]string, 0)
 
 	st := reflect.TypeOf(m)
 	fieldNum := st.NumField()
 	for i := 0; i < fieldNum; i++ {
-		v := reflect.ValueOf(m)
+		field := reflect.ValueOf(m).Field(i)
+
+		if field.CanInt() || field.CanFloat() || field.CanUint() {
+			if !field.IsZero() {
+				dbTag := st.Field(i).Tag.Get("db")
+				tmp := dbTag + "= :" + dbTag
+				result = append(result, tmp)
+			}
+			continue
+		}
+		if field.Type().Name() == "string" && field.String() == "" {
+			continue
+		}
+
+		if field.Type().Name() != "string" && field.IsNil() {
+			continue
+		}
+
+		dbTag := st.Field(i).Tag.Get("db")
+		tmp := dbTag + "= :" + dbTag
+		result = append(result, tmp)
 	}
+
+	return strings.Join(result, ",")
 }
 
 func rowsToSlice[T Model](sql string) []*T {
 	var models []*T
 
-	stmt, err := constant.DBOp.Prepare(sql)
+	stmt, err := app.DBOp.Prepare(sql)
 	if err != nil {
 		log.Logger.Error("sql语句错误：", zap.Error(err))
 		return nil
 	}
 	stmt.QueryRow()
 
-	rows, err := constant.DBOp.Queryx(sql)
+	rows, err := app.DBOp.Queryx(sql)
 	if err != nil {
 		log.Logger.Error("查询错误，", zap.Error(err))
 		return nil

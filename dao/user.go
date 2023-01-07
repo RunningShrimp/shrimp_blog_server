@@ -3,10 +3,11 @@ package dao
 import (
 	"fmt"
 	"go.uber.org/zap"
-	"shrimp_blog_sever_v2/constant"
+	"shrimp_blog_sever_v2/app"
 	"shrimp_blog_sever_v2/log"
 	"shrimp_blog_sever_v2/model"
 	"shrimp_blog_sever_v2/utils"
+	"time"
 )
 
 type UserDao BaseDao[model.User]
@@ -28,11 +29,10 @@ func (u *UserDaoImpl) SelectByPage(page, pageSize int) []*model.User {
 	sql := fmt.Sprintf("select %s from user limit %d , %d", genSelectFiledString[model.User](), (page-1)*pageSize, pageSize)
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 	return rowsToSlice[model.User](sql)
-
 }
 
 func (u *UserDaoImpl) SelectByIds(ids ...int) []*model.User {
-	sql := fmt.Sprintf("select %s from user where id in ( %s )", genSelectFiledString[model.User](), utils.JoinIntSlice(ids, ","))
+	sql := fmt.Sprintf("select %s from user where id in ( %s )", genSelectFiledString[model.User](), utils.JoinIntSlice(",", ids))
 	log.Logger.Info("sql语句：", zap.String("sql", sql))
 	return rowsToSlice[model.User](sql)
 }
@@ -41,24 +41,67 @@ func (u *UserDaoImpl) SelectStatusById(id int) int {
 	var status int
 	sql := fmt.Sprintf("select status from user where  id = %d", id)
 
-	if err := constant.DBOp.Get(&status, sql); err != nil {
-		log.Logger.Error("查询出错：", zap.Error(err))
+	if err := app.DBOp.Get(&status, sql); err != nil {
+		log.Logger.Error("查询用户出错：", zap.Error(err))
+		return -1
 	}
 
 	return status
 }
 
-func (u *UserDaoImpl) Insert(t *model.User) {
-	//constant.DBOp.Exec()
-	sql := fmt.Sprintf("insert into user %s  ")
+func (u *UserDaoImpl) Insert(t *model.User) bool {
+	v, p := genInsertValueAndPlaceholder[model.User](*t)
+	sql := fmt.Sprintf("insert into user  %s  VALUES %s ", genInsertFieldString[model.User](), p)
+	log.Logger.Info("sql语句：", zap.String("sql", sql))
+
+	result := app.DBOp.MustExec(sql, v...)
+
+	n, err := result.RowsAffected()
+	if err != nil {
+		log.Logger.Error("插入数据数据库返回错误：", zap.Error(err))
+		return false
+	}
+
+	return n > 0
 }
 
-func (u *UserDaoImpl) Update(t *model.User) {
-	//TODO implement me
-	panic("implement me")
+func (u *UserDaoImpl) Update(t *model.User) bool {
+	now := time.Now()
+	t.UpdateTime = &now
+	sql := fmt.Sprintf("update user set %s where id=:id", genUpdateFieldString[model.User](*t))
+
+	result, err := app.DBOp.NamedExec(sql, *t)
+	if err != nil {
+		log.Logger.Error("更新用户失败：", zap.Error(err))
+		return false
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		log.Logger.Error("数据库返回错误：", zap.Error(err))
+		return false
+	}
+
+	return affected > 0
 }
 
-func (u *UserDaoImpl) DeleteById(t *model.User) {
-	//TODO implement me
-	panic("implement me")
+func (u *UserDaoImpl) DeleteById(t *model.User) bool {
+	now := time.Now()
+	t.DeleteTime = &now
+	t.UpdateTime = &now
+	t.Status = uint(app.Disable)
+
+	result, err := app.DBOp.NamedExec("update user set delete_time = :delete_time,status = :status where id = :id", *t)
+	if err != nil {
+		log.Logger.Error("删除用户失败：", zap.Error(err))
+		return false
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		log.Logger.Error("数据库返回错误：", zap.Error(err))
+		return false
+	}
+
+	return affected > 0
 }

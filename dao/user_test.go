@@ -2,7 +2,6 @@ package dao
 
 import (
 	"os"
-	"reflect"
 	"shrimp_blog_sever_v2/config"
 	"shrimp_blog_sever_v2/model"
 	"testing"
@@ -138,7 +137,15 @@ func TestUserDaoImpl_DeleteById(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test1",
+			args: args{
+				t: &model.User{
+					ID:         1,
+					DeleteTime: nil,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -156,97 +163,23 @@ func TestUserDaoImpl_Insert(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test1",
+			args: args{
+				t: &model.User{
+					Username: "test1",
+					Password: "test",
+					Email:    "1234@abc.com",
+					Avatar:   "www.baidu.com",
+					Status:   0,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			u := &UserDaoImpl{}
 			u.Insert(tt.args.t)
-		})
-	}
-}
-
-func TestUserDaoImpl_SelectById1(t *testing.T) {
-	type args struct {
-		id int
-	}
-	tests := []struct {
-		name string
-		args args
-		want *model.User
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &UserDaoImpl{}
-			if got := u.SelectById(tt.args.id); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SelectById() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestUserDaoImpl_SelectByIds1(t *testing.T) {
-	type args struct {
-		ids []int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []*model.User
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &UserDaoImpl{}
-			if got := u.SelectByIds(tt.args.ids...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SelectByIds() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestUserDaoImpl_SelectByPage1(t *testing.T) {
-	type args struct {
-		page     int
-		pageSize int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []*model.User
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &UserDaoImpl{}
-			if got := u.SelectByPage(tt.args.page, tt.args.pageSize); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SelectByPage() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestUserDaoImpl_SelectStatusById1(t *testing.T) {
-	type args struct {
-		id int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			u := &UserDaoImpl{}
-			if got := u.SelectStatusById(tt.args.id); got != tt.want {
-				t.Errorf("SelectStatusById() = %v, want %v", got, tt.want)
-			}
 		})
 	}
 }
@@ -259,7 +192,19 @@ func TestUserDaoImpl_Update(t *testing.T) {
 		name string
 		args args
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test1",
+			args: args{
+				t: &model.User{
+					ID:       2,
+					Username: "test1tes",
+					Password: "test12",
+					Email:    "1234re@abc.com",
+					Avatar:   "www.baidure.com",
+					Status:   0,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

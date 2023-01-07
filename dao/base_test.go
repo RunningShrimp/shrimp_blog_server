@@ -19,3 +19,35 @@ func TestGenSelectFiled(t *testing.T) {
 		})
 	}
 }
+
+func Test_genInsertValueString(t *testing.T) {
+	user := model.User{
+		ID:         0,
+		Username:   "sadad",
+		Password:   "dasas",
+		Email:      "sasda",
+		Avatar:     "sada",
+		CreateTime: nil,
+		UpdateTime: nil,
+		DeleteTime: nil,
+		Status:     0,
+	}
+
+	t.Log(genInsertValueAndPlaceholder[model.User](user))
+}
+
+func Test_genUpdateFieldString(t *testing.T) {
+	user := model.User{
+		ID:         0,
+		Username:   "sadad",
+		Password:   "dasas",
+		Email:      "sasda",
+		Avatar:     "sada",
+		CreateTime: nil,
+		UpdateTime: nil,
+		DeleteTime: nil,
+		Status:     0,
+	}
+
+	t.Log(genUpdateFieldString[model.User](user))
+}

@@ -1,15 +1,13 @@
-package constant
+package app
 
 import (
 	"context"
 	"github.com/go-redis/redis"
 	"github.com/jmoiron/sqlx"
-	"os"
 )
 
-type ContextKey int
+type Status uint
 
-var Separator = string(os.PathSeparator)
 var Context = context.Background()
 
 var DBOp = &sqlx.DB{}
@@ -17,7 +15,12 @@ var DBOp = &sqlx.DB{}
 var RedisClient = &redis.Client{}
 
 const (
-	ConfigPath ContextKey = iota
-	EnvConfig
-	DbConfig
+	ConfigPath = "configPath"
+	EnvConfig  = "env"
+	DbConfig   = "db"
+)
+
+const (
+	Enable  Status = iota + 1
+	Disable Status = iota + 1
 )
