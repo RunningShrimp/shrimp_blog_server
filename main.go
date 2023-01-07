@@ -2,15 +2,15 @@ package main
 
 import (
 	"net/http"
-	"shrimp_blog_sever_v2/config"
+	"shrimp_blog_sever/config"
 )
 
 func init() {
-	config.InitGoble(".")
+	config.Init(".")
 }
 func main() {
 
-	serveMux := http.NewServeMux()
+	//serveMux := http.NewServeMux()
 
 	err := http.ListenAndServe(config.ServerPort(), nil)
 	if err != nil {

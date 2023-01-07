@@ -8,9 +8,21 @@ import (
 
 type Status uint
 
-var Context = context.Background()
+// request -> mid with RsCtx -> handler(ctx, req, res)
+type RsContext struct {
+	ctx context.Context
+	env string // init
+}
 
-var DBOp = &sqlx.DB{}
+func (c RsContext) GetEnv() string {
+	return c.GetEnv()
+}
+
+func (c RsContext) Context() context.Context {
+	return c.ctx
+}
+
+var DBClient = &sqlx.DB{}
 
 var RedisClient = &redis.Client{}
 
