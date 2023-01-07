@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	constant "shrimp_blog_sever_v2/app"
 	"shrimp_blog_sever_v2/config/internal"
 	"strconv"
 	"strings"
@@ -46,7 +47,7 @@ func path(path string) string {
 	)
 
 	// 放入context中，方便以后取值
-	app.Context = context.WithValue(app.Context, app.ConfigPath, file)
+	constant.Context = context.WithValue(constant.Context, constant.ConfigPath, file)
 	return file
 }
 
@@ -71,9 +72,9 @@ func activeEnv(path string) string {
 		panic(err)
 	}
 
-	app.Context = context.WithValue(
-		app.Context,
-		app.EnvConfig,
+	constant.Context = context.WithValue(
+		constant.Context,
+		constant.EnvConfig,
 		pro.Profile.Active,
 	)
 
@@ -108,13 +109,13 @@ func newDatabase() {
 	if err != nil {
 		panic(err)
 	}
-	app.DBOp = db
+	constant.DBOp = db
 }
 
 func newRedis() {
 	redisConfig := app.Config.Redis
 
-	app.RedisClient = redisClient.NewClient(&redisClient.Options{
+	constant.RedisClient = redisClient.NewClient(&redisClient.Options{
 		Addr:     fmt.Sprintf("%s:%d", redisConfig.Host, redisConfig.Port),
 		Password: redisConfig.Password,
 		DB:       redisConfig.Database,
