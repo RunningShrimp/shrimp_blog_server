@@ -2,7 +2,7 @@ package log
 
 import (
 	"go.uber.org/zap"
-	"shrimp_blog_sever/config"
+	"shrimp_blog_sever/framework/config"
 )
 
 var Logger *zap.Logger

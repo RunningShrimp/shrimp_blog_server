@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
-	"shrimp_blog_sever/app"
-	"shrimp_blog_sever/config"
 	_ "shrimp_blog_sever/config"
+	"shrimp_blog_sever/framework/app"
+	"shrimp_blog_sever/framework/config"
 	"shrimp_blog_sever/model"
 	"testing"
 )

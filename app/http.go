@@ -1,6 +1,6 @@
 package app
 
-type BaseController struct{}
+type BaseRequest struct{}
 
 type Request struct {
 	QueryString string

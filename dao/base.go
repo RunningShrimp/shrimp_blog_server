@@ -3,8 +3,8 @@ package dao
 import (
 	"go.uber.org/zap"
 	"reflect"
-	"shrimp_blog_sever/app"
-	"shrimp_blog_sever/log"
+	"shrimp_blog_sever/framework/app"
+	"shrimp_blog_sever/framework/log"
 	"shrimp_blog_sever/model"
 	"strings"
 	"time"

@@ -1,3 +1,5 @@
 package api
 
-type User struct{}
+type User struct {
+	BaseController
+}

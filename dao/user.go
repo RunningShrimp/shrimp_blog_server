@@ -3,8 +3,9 @@ package dao
 import (
 	"fmt"
 	"go.uber.org/zap"
-	"shrimp_blog_sever/app"
-	"shrimp_blog_sever/log"
+	constant "shrimp_blog_sever/app"
+	"shrimp_blog_sever/framework/app"
+	"shrimp_blog_sever/framework/log"
 	"shrimp_blog_sever/model"
 	"shrimp_blog_sever/utils"
 	"time"
@@ -89,7 +90,7 @@ func (u *UserDaoImpl) DeleteById(t *model.User) bool {
 	now := time.Now()
 	t.DeleteTime = &now
 	t.UpdateTime = &now
-	t.Status = uint(app.Disable)
+	t.Status = uint(constant.Disable)
 
 	result, err := app.DBClient.NamedExec("update user set delete_time = :delete_time,status = :status where id = :id", *t)
 	if err != nil {
