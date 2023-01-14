@@ -136,7 +136,8 @@ func (s *Server) handleRequest(writer http.ResponseWriter, data map[string]any, 
 	//}
 	//TODO:目前只支持string并且只支持一个返回参数
 	if len(resultArr) > 0 {
-		_, err := fmt.Fprintf(writer, resultArr[0].String())
+
+		_, err := fmt.Fprintf(writer, "%s", resultArr[0].String())
 		if err != nil {
 			fmt.Println(err)
 			return
