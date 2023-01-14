@@ -1,8 +1,8 @@
 package service
 
 import (
-	"shrimp_blog_sever/app"
 	"shrimp_blog_sever/dao"
+	"shrimp_blog_sever/framework/app"
 )
 
 type UserService struct{}

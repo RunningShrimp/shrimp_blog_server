@@ -3,7 +3,10 @@ package app
 import "context"
 
 type IController interface {
-	Init(ctx context.Context)
+	InitController(ctx context.Context)
+}
+type IRequest interface {
+	InitRequest(ctx context.Context)
 }
 
 type BaseController struct {
@@ -11,9 +14,13 @@ type BaseController struct {
 }
 
 type BaseRequest struct {
-	context.Context
+	Ctx context.Context
 }
 
-func (c *BaseController) Init(ctx context.Context) {
+func (c *BaseController) InitController(ctx context.Context) {
 	c.Ctx = ctx
+}
+
+func (r *BaseRequest) InitRequest(ctx context.Context) {
+	r.Ctx = ctx
 }

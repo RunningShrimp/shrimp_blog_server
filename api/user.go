@@ -17,3 +17,7 @@ type UserRequest struct {
 func (u UserController) Login(request UserRequest) string {
 	return fmt.Sprintf("hello, %s,你的密码是：%s", request.Username, request.Password)
 }
+
+func (u UserController) Info(username, password string) string {
+	return fmt.Sprintf("hello, %s,你的密码是：%s", username, password)
+}

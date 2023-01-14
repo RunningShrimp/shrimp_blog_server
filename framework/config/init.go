@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
 )
@@ -35,4 +36,13 @@ func initConfig(configFile string) {
 	if err != nil {
 		panic(err)
 	}
+}
+func ServerPort() string {
+	port := RsConfig.Config.Server.Port
+
+	if port < 0 || port > 65535 {
+		panic("端口不正确")
+	}
+
+	return fmt.Sprintf(":%d", port)
 }
